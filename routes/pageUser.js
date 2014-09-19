@@ -1,6 +1,7 @@
 var user = require('./module/user'),
     async = require('async'),
-    tool = require('./util/tool');
+    tool = require('./util/tool'),
+    statistics = require('./module/statistics');
 
 //跳转到注册页面
 exports.getReg = function(req, res){
