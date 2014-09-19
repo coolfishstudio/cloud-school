@@ -12,14 +12,8 @@ router.get('/', function(req, res){
 		res.render('manage/index', { user: req.session.user});
 	}
 });
-// router.get('/login', function(req, res){
-// 	res.render('manage/login', { title: 'Express' });
-// });
-// router.get('/signup', function(req, res){
-// 	res.render('manage/signup', { title: 'Express' });
-// });
 
-//session
+//session √
 router.get('/login', pageUser.checkNotLogin);
 router.get('/login', pageUser.getLogin);
 router.post('/login', pageUser.login);
@@ -29,9 +23,7 @@ router.post('/signup', pageUser.registeredUser);
 router.get('/logout', pageUser.checkLogin);
 router.get('/logout', pageUser.logout);
 //user
-router.get('/user', function(req, res){
-	res.render('manage/user', { user: req.session.user});
-});
+router.get('/user', pageUser.getUser);
 
 
 module.exports = router;

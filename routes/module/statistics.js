@@ -1,14 +1,9 @@
-var mongoStat = require('../mongo/mongoStatistics');
+var mongoStat = require('../mongo/mongoStatistics'),
+	mongoStatCount = require('../mongo/mongoStatisticsCount');
 var tool = require('../util/tool');
 var async = require('async');
 
 exports.insertStat = function(statisticsObj, callback){
-	statisticsObj._id = tool.generateUUID();
-	statisticsObj.date = new Date().getTime();
-	statisticsObj.pv = 0;
-	statisticsObj.uv = 0;
-	statisticsObj.userLoginCount = 0;
-	statisticsObj.userRegisterCount = 0;
 	mongoStat.insertStat(statisticsObj, callback);
 }
 
@@ -24,38 +19,69 @@ exports.getByDate = function(date, callback){//根据date去找statistics
 	mongoStat.getByDate(date, callback);
 };
 
-exports.getStatistics = function(startDate, endDate, callback){//根据startDate、endDate去找statistics
+exports.getStat = function(startDate, endDate, callback){//根据startDate、endDate去找statistics
 	mongoStat.getStatistics(startDate, endDate, callback);
 };
+exports.getStatCount = function(callback){
+	mongoStatCount.getCount(callback);
+};
 
-exports.upStat = function(statisticsData, callback){ 
+
+exports.setStat = function(statisticsData, callback){ 
 	var StatDate = {};
-	var date = Date.parse(tool.getThisTime().split(' ')[0]);
+	var StatCountDate = {};
+	var date = Date.parse(tool.getThisTime().split(' ')[0].replace(/\-/g,'\/'));
 	async.series({
 		getByDate : function(done){
 			mongoStat.getByDate(date, function(err, data){
 				StatDate = data;
-				console.log('getByDate:',StatDate);
 				done(err);
 			});
 		},
 		insertStat : function(done){
-			if(!StatDate.date){
-				mongoStat.insertStat(StatDate, function(err, data){
-					StatDate = data;
-					console.log('insertStat:',StatDate);
+			if(!StatDate){
+				mongoStat.insertStat({}, function(err, data){
+					StatDate = data[0];
 					done(err);
 				});
+			}else{
+				done();
 			}
 		},
 		updateStat : function(done){
 			StatDate[statisticsData]++;
 			mongoStat.updateStat(StatDate._id, StatDate, function(err, data){
 				StatDate = data;
-				console.log('updateStat:',StatDate);
 				done(err);
 			});
-		}
+		},
+		getCount : function(done){
+			mongoStatCount.getCount(function(err, data){
+				StatCountDate = data;
+				done(err);
+			});
+		},
+		insertCount : function(done){
+			if(!StatCountDate){
+				mongoStatCount.insertStatCount({}, function(err, data){
+					StatCountDate = data[0];
+					done(err);
+				});
+			}else{
+				done();
+			}
+		},
+		updateCount : function(done){
+			if(!StatCountDate[statisticsData]){
+				StatCountDate[statisticsData] = 1;
+			}else{
+				StatCountDate[statisticsData]++;
+			}
+			mongoStatCount.updateStatCount(StatCountDate, function(err, data){
+				StatCountDate = data;
+				done(err);
+			});
+		},
 	},function(err){
 		callback(err, StatDate);
 	});

@@ -18,23 +18,27 @@
 							<li class="sparkline-row">
 								<h4 class="green">
 									<span>
-										日注册数
+										总注册数
 									</span>
-									7930
+									<%= statCount.userRegisterCount || 0 %>
 								</h4>
 								<div class="sparkline big" data-color="green">
-									<!--27,10,19,6,22,23,3,20,8,18,12,3,23,29,17,20,5,16,17,4,4,22,13-->
+									<% statList.forEach(function(stat){%>
+									<%= stat.userRegisterCount %>
+									<% }) %>
 								</div>
 							</li>
 							<li class="sparkline-row">
 								<h4 class="red">
 									<span>
-										日登录数
+										总登录数
 									</span>
-									7930
+									<%= statCount.userLoginCount || 0 %>
 								</h4>
 								<div class="sparkline big">
-									<!--27,10,19,6,22,23,3,20,8,18,12,3,23,29,17,20,5,16,17,4,4,22,13-->
+									<% statList.forEach(function(stat){%>
+									<%= stat.userLoginCount %>
+									<% }) %>
 								</div>
 							</li>
 						</ul>

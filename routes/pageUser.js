@@ -11,6 +11,31 @@ exports.getReg = function(req, res){
 exports.getLogin = function(req, res){
     res.render('manage/login');
 };
+//跳转到用户管理页面
+exports.getUser = function(req, res){
+    var endDate = Date.parse(tool.getThisTime().split(' ')[0].replace(/\-/g,'\/'));//today
+    var startDate = endDate - 60*60*24*14*1000;
+    var statList = [];
+    var statCount = {};
+    async.series({
+        //获取统计
+        getStat14 : function(done){
+            statistics.getStat(startDate, endDate, function(err, info){
+                statList = info;
+                done(err);
+            });
+        },
+        //获取注册总数
+        getRegisterStatCount : function(done){
+            statistics.getStatCount(function(err, info){
+                statCount = info;
+                done(err);
+            });
+        }
+    },function(err){
+        res.render('manage/user', { user: req.session.user, statList : statList, statCount : statCount});
+    });
+};
 //注册用户
 exports.registeredUser = function(req,res){
     var userEmail = req.body.email;
@@ -46,6 +71,18 @@ exports.registeredUser = function(req,res){
                     done(err);
                 }
             });
+        },
+        //添加注册纪录
+        setRegisterStat : function(done){
+            statistics.setStat('userRegisterCount', function(err, info){
+                done(err);
+            });
+        },
+        //添加登录纪录
+        setLoginStat : function(done){
+            statistics.setStat('userLoginCount', function(err, info){
+                done(err);
+            });
         }
     }, function(err){
         if(err){
@@ -57,13 +94,13 @@ exports.registeredUser = function(req,res){
 };
 //用户登录
 exports.login = function(req, res){
-    var userName = req.body.userName;
+    var userEmail = req.body.email;
     var passWord = req.body.passWord;
     var userInfo = {};
     async.series({
-        //根据名字去查询
-        findUserName: function(done){
-            user.getByUserName(userName, function(err, info){
+        //根据email去查询
+        findByUserEmail: function(done){
+            user.getByUserEmail(userEmail, function(err, info){
                 if(!err){
                     if(null != info){
                         userInfo = info;
@@ -84,9 +121,14 @@ exports.login = function(req, res){
             }else{
                 done('密码不正确，请重新输入。');
             }
+        },
+        //添加登录纪录
+        setLoginStat : function(done){
+            statistics.setStat('userLoginCount', function(err, info){
+                done(err);
+            });
         }
     },function(err){
-        console.log(err);
         if(err){
             res.send({status: -1, content: err});
         }else{
