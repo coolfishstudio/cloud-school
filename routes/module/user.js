@@ -20,3 +20,7 @@ exports.removeUser = function(userID, callback){//删除用户
 exports.getByUserEmail = function(userEmail, callback){
 	mongoUser.getByUserEmail(userEmail,callback);
 };
+
+exports.findAllByPage = function(pageNum, page, callback){
+	mongoUser.findAllByPage(pageNum, page, callback);
+};

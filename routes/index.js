@@ -24,6 +24,10 @@ router.get('/logout', pageUser.checkLogin);
 router.get('/logout', pageUser.logout);
 //user
 router.get('/user', pageUser.getUser);
+//lession
+router.get('/lession', function(req, res){
+	res.render('manage/lession',{ user: req.session.user});
+});
 
 
 module.exports = router;

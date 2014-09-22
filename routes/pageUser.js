@@ -1,6 +1,7 @@
 var user = require('./module/user'),
     async = require('async'),
     tool = require('./util/tool'),
+    config = require('../config'),
     statistics = require('./module/statistics');
 
 //跳转到注册页面
@@ -17,6 +18,8 @@ exports.getUser = function(req, res){
     var startDate = endDate - 60*60*24*14*1000;
     var statList = [];
     var statCount = {};
+    var page = req.body.page || 1;
+    var userList = [];    
     async.series({
         //获取统计
         getStat14 : function(done){
@@ -31,9 +34,17 @@ exports.getUser = function(req, res){
                 statCount = info;
                 done(err);
             });
-        }
+        },
+        //获取用户列表
+        getAllByPage: function(done){
+            user.findAllByPage(config.USERPAGENUM, page, function(err, info){
+                userList = info;
+                done(err);
+            });
+        },
+
     },function(err){
-        res.render('manage/user', { user: req.session.user, statList : statList, statCount : statCount});
+        res.render('manage/user', { user: req.session.user, statList : statList, statCount : statCount, userList : userList});
     });
 };
 //注册用户
@@ -141,6 +152,10 @@ exports.logout = function(req, res){
     req.session.user = null;
     res.redirect('/login');
 }
+// //获取用户列表信息 分页
+// exports.findAllByPage = function(req, res, next){
+
+// }
 //页面权限控制
 exports.checkLogin = function(req, res, next){
   if(!req.session.user){

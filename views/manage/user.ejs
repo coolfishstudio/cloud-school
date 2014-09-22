@@ -23,9 +23,12 @@
 									<%= statCount.userRegisterCount || 0 %>
 								</h4>
 								<div class="sparkline big" data-color="green">
-									<% statList.forEach(function(stat){%>
+									<% statList.forEach(function(stat, index){%>
+									<% if(index != statList.length - 1){ %>
+										<%= stat.userRegisterCount %> ,
+									<% }else{ %>
 									<%= stat.userRegisterCount %>
-									<% }) %>
+									<% }}) %>
 								</div>
 							</li>
 							<li class="sparkline-row">
@@ -36,9 +39,12 @@
 									<%= statCount.userLoginCount || 0 %>
 								</h4>
 								<div class="sparkline big">
-									<% statList.forEach(function(stat){%>
+									<% statList.forEach(function(stat,index){%>
+									<% if(index != statList.length - 1){ %>
+										<%= stat.userLoginCount %> ,
+									<% }else{ %>
 									<%= stat.userLoginCount %>
-									<% }) %>
+									<% }}) %>
 								</div>
 							</li>
 						</ul>
@@ -87,7 +93,28 @@
 							<div class="box-content padded">
 								<div class="row-fluid">
 									<div class="span12 separate-sections" style="margin-top: 5px;">
-										222222222
+										<table class="table">
+											<thead>
+												<tr>
+													<th>帐户</th>
+													<th>身份</th>
+													<th>注册时间</th>
+													<th>详情</th>
+													<th>操作</th>
+												</tr>
+											</thead>
+											<tbody>
+												<% var roleJson = {'consumer':'管理员'};userList.forEach(function(user, index){%>
+												<tr>
+													<td><%= user.email %></td>
+													<td><%= roleJson[user.role] %></td>
+													<td><%= user.createDate %></td>
+													<td>详情</td>
+													<td>操作</td>
+												</tr>
+												<% }) %>
+											</tbody>
+										</table>
 									</div>
 								</div>
 							</div>

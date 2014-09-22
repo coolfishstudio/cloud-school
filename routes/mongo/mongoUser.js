@@ -15,3 +15,7 @@ exports.removeUser = function(userID, callback){//删除用户
 exports.getByUserEmail = function(userEmail, callback){//根据username去找user
 	userColl.findOne({email: userEmail}, callback);
 };
+
+exports.findAllByPage = function(pageNum, page, callback){//查找全部用户
+	userColl.find().sort({'createTimestamp':-1}).limit(pageNum).skip(pageNum * (page - 1)).toArray(callback);
+};
